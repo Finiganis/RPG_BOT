@@ -6,6 +6,9 @@ public class RandomFactory {
 	private static Random gen = new Random();
 	
 	public static int getARoll(){
-		return gen.nextInt();
+		int res = gen.nextInt();
+		return res > 0 ? res : -res;
 	}
+
+
 }

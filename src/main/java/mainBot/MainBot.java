@@ -1,6 +1,12 @@
 package mainBot;
 
-import mainBot.domain.Character;
+import mainBot.commands.RollCommand;
+import mainBot.domain.Settings;
+import mainBot.exception.CommandParamsException;
+import mainBot.exception.RoleException;
+import mainBot.mode.aventure.domain.Character;
+import mainBot.utils.ResultRollUtil;
+import mainBot.utils.Usefull;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -39,13 +45,13 @@ public class MainBot extends ListenerAdapter {
 			String content = event.getMessage().getContentDisplay();
 			if (content.startsWith("!rpg ")) {
 				content = content.substring(5);
-				switch(content) {
-					default:
-						channel.sendMessage(event.getAuthor().getAsMention() + " Commande inconnue, pour accéder à la liste des commandes disponibles exécuter \"!rpg commands\"").queue();
-						break;
+				String[] commandParams = content.split(" ");
+				content = commandParams.length != 0 ? commandParams[0] : "";
+				try {
+					generalCommands(event, channel, commandParams);
+				} catch (CommandParamsException | RoleException e) {
+					channel.sendMessage(e.getMessage()).queue();
 				}
-			} else {
-				System.out.printf("not a command");
 			}
 			System.out.printf("[%s][%s] %#s: %s%n", event.getGuild().getName(),
 					event.getChannel().getName(), event.getAuthor(), event.getMessage().getContentDisplay());
@@ -53,6 +59,43 @@ public class MainBot extends ListenerAdapter {
 		else
 		{
 			System.out.printf("[PM] %#s: %s%n", event.getAuthor(), event.getMessage().getContentDisplay());
+		}
+	}
+
+	private void generalCommands(MessageReceivedEvent event, MessageChannel channel, String[] commandParams) throws CommandParamsException, RoleException {
+		final String mention = event.getAuthor().getAsMention() + " ";
+		if (commandParams.length == 0) throw new CommandParamsException(mention + "Commande invalide, pour accéder à la liste des commandes disponibles, exécuter \"!rpg commands\"");
+		Settings.modeMap.putIfAbsent(channel.getName(), Settings.Mode.NONE);
+		boolean isMJ = Usefull.isMJ(event);
+
+		switch(commandParams[0]) {
+			case "baseroll" :
+				RollCommand command = new RollCommand(commandParams);
+				channel.sendMessage(event.getAuthor().getAsMention() + " " + ResultRollUtil.messageRoll(command)).queue();
+				break;
+			case "setmode" :
+				try {
+					Settings.modeMap.put(channel.getName(), Settings.Mode.valueOf(commandParams[1]));
+					channel.sendMessage(mention + "Mode du channel " + channel.getName() + " : " + Settings.modeMap.get(channel.getName())).queue();
+				} catch (IllegalArgumentException e) {
+					channel.sendMessage(mention + "Mode inconnu, liste des modes existants :\n" + Settings.listeModes()).queue();
+				}
+				break;
+			case "getmode" :
+				channel.sendMessage(mention + "Mode actuel sur le channel " + channel.getName() + " : " + Settings.modeMap.get(channel.getName())).queue();
+				break;
+			default:
+				break;
+		}
+
+		switch (Settings.modeMap.get(channel.getName())) {
+			case AVENTURE:
+				break;
+			case STARVENTURE:
+				break;
+			case NONE:
+				channel.sendMessage(mention + "Commande " + commandParams[0] + " inconnue, pour accéder à la liste des commandes disponibles, exécuter \"!rpg commands\"").queue();
+				break;
 		}
 	}
 	/*
