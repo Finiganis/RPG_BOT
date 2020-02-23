@@ -4,7 +4,9 @@ import mainBot.commands.RollCommand;
 import mainBot.domain.Settings;
 import mainBot.exception.CommandParamsException;
 import mainBot.exception.RoleException;
+import mainBot.mode.aventure.CommandsHandlerAventure;
 import mainBot.mode.aventure.domain.Character;
+import mainBot.mode.starventure.CommandsHandlerStarventure;
 import mainBot.utils.ResultRollUtil;
 import mainBot.utils.Usefull;
 import net.dv8tion.jda.api.JDA;
@@ -90,8 +92,10 @@ public class MainBot extends ListenerAdapter {
 
 		switch (Settings.modeMap.get(channel.getName())) {
 			case AVENTURE:
+				CommandsHandlerAventure.handle(event, channel, commandParams);
 				break;
 			case STARVENTURE:
+				CommandsHandlerStarventure.handle(event, channel, commandParams);
 				break;
 			case NONE:
 				channel.sendMessage(mention + "Commande " + commandParams[0] + " inconnue, pour accéder à la liste des commandes disponibles, exécuter \"!rpg commands\"").queue();

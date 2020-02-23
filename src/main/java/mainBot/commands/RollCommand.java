@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class RollCommand {
     private static final String ROLL_REGEX = "([0-9]+)D([0-9]+)";
     private static final int MAX_ROLL_AUTHORIZED = 10;
@@ -40,7 +39,7 @@ public class RollCommand {
                 }
 
                 for (int nb = 0; nb < nbRoll; nb++) {
-                    int roll = RandomFactory.getARoll() % maxRoll + 1;
+                    int roll = RandomFactory.getARoll(maxRoll);
                     sb.append(String.format("%d,", roll));
                 }
 

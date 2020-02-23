@@ -10,5 +10,8 @@ public class RandomFactory {
 		return res > 0 ? res : -res;
 	}
 
-
+	public static int getARoll(int max){
+		int res = gen.nextInt();
+		return res >= 0 ? (res % max) + 1 : (-res % max) + 1;
+	}
 }
