@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 @Getter
 @Setter
 @AllArgsConstructor
-public class DestinRollCommand {
+public class RiskRollCommand {
     private static final int MAX_ROLL_AUTHORIZED = 5;
     private String[] params;
 

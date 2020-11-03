@@ -15,9 +15,11 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 
@@ -74,7 +76,7 @@ public class MainBot extends ListenerAdapter {
 			case "baseroll" :
 				RollCommand command = new RollCommand(commandParams);
 				channel.sendMessage(event.getAuthor().getAsMention() + " " + ResultRollUtil.messageRoll(command)).queue();
-				break;
+				return;
 			case "setmode" :
 				try {
 					Settings.modeMap.put(channel.getName(), Settings.Mode.valueOf(commandParams[1]));
@@ -82,10 +84,13 @@ public class MainBot extends ListenerAdapter {
 				} catch (IllegalArgumentException e) {
 					channel.sendMessage(mention + "Mode inconnu, liste des modes existants :\n" + Settings.listeModes()).queue();
 				}
-				break;
+				return;
 			case "getmode" :
 				channel.sendMessage(mention + "Mode actuel sur le channel " + channel.getName() + " : " + Settings.modeMap.get(channel.getName())).queue();
-				break;
+				return;
+			case "saveSettings":
+				channel.sendMessage(mention + Settings.saveSettings()).queue();
+				return;
 			default:
 				break;
 		}
@@ -102,6 +107,12 @@ public class MainBot extends ListenerAdapter {
 				break;
 		}
 	}
+
+	@Override
+	public void onReady(@Nonnull ReadyEvent event) {
+		Settings.loadSettings();
+	}
+
 	/*
 	@Override
 	public void onEvent(Event event){

@@ -1,7 +1,7 @@
 package mainBot.mode.starventure;
 
 import mainBot.exception.CommandParamsException;
-import mainBot.mode.starventure.commands.DestinRollCommand;
+import mainBot.mode.starventure.commands.RiskRollCommand;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -10,8 +10,8 @@ public class CommandsHandlerStarventure {
         final String mention = event.getAuthor().getAsMention() + " ";
         try {
             switch (commandParams[0]) {
-                case "destinroll":
-                    channel.sendMessage(new DestinRollCommand(commandParams).execute()).queue();
+                case "riskroll":
+                    channel.sendMessage(mention + " " + new RiskRollCommand(commandParams).execute()).queue();
                     break;
                 default:
                     channel.sendMessage(mention + "Commande " + commandParams[0] + " inconnue, pour accéder à la liste des commandes disponibles, exécuter \"!rpg commands\"").queue();
